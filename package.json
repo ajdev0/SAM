@@ -1,0 +1,11 @@
+{
+  "name": "my-react-express-app",
+  "version": "1.0.0",
+  "scripts": {
+    "start": "concurrently \"cd frontend && npm run dev\" \"cd backend && node app.js\"",
+    "build": "cd client && npm run build"
+  },
+  "devDependencies": {
+    "concurrently": "^7.4.0"
+  }
+}
