@@ -4,6 +4,7 @@ import bodyParser from "body-parser";
 
 import authRoute from "./routes/authRoute.js";
 import segmentRoute from "./routes/segmentRoute.js";
+import userDataRoute from "./routes/userDataRoute.js";
 
 dotenv.config();
 
@@ -13,24 +14,12 @@ app.use(bodyParser.urlencoded({ extended: true }));
 
 const port = 7001;
 
-/****
- * ENDPOINTS
- * 
-  1. Auth and redirect
-	2. Generate access token by using code 
-	3. Create segment
-	4. Get all segments
-	5. Upload users data
-	6. Add users to segment
-  7. Get segment by id
-	8. Update segment
-  9. Update users in local db
- */
-
 //auth
 app.use("/api/auth", authRoute);
 //segments
 app.use("/api/segment", segmentRoute);
+//users
+app.use("/api/users", userDataRoute);
 
 app.get("/api", (req, res) => {
   res.json({ message: "Hello from the Express server!" });

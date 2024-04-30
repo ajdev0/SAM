@@ -132,3 +132,37 @@ export const updateSegment = async (req, res) => {
     res.status(error.response.status).json({ message: error.response.data });
   }
 };
+
+//add users to segment
+export const addSegmentUsers = async (req, res) => {
+  const segmentId = req.params.segment_id;
+  const accessToken = req.headers["snap-access-token"];
+  const formData = req.body;
+
+  try {
+    const data = {
+      users: [
+        {
+          schema: [formData.schema],
+          data: formData.data,
+        },
+      ],
+    };
+    const config = {
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+        "Content-Type": "application/json",
+      },
+    };
+    const response = await axios.post(
+      `${process.env.SNAPCHAT_API}/segments/${segmentId}/users`,
+      data,
+      config
+    );
+    res.send(response.data);
+  } catch (error) {
+    // If there's an error, send an error response
+    console.error("Error:", error.response.data);
+    res.status(error.response.status).json({ message: error.response.data });
+  }
+};
