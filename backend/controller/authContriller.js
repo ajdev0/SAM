@@ -36,7 +36,7 @@ export const getAuthAccessToken = async (req, res) => {
     res.send(response.data);
   } catch (error) {
     // If there's an error, send an error response
-    console.error("Error:", error);
-    res.status(error.response.status).send(error.response.data);
+    console.error("Error:", error.response.data);
+    res.status(error.response.status).json({ message: error.response.data });
   }
 };

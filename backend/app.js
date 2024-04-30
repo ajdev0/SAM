@@ -3,6 +3,7 @@ import dotenv from "dotenv";
 import bodyParser from "body-parser";
 
 import authRoute from "./routes/authRoute.js";
+import segmentRoute from "./routes/segmentRoute.js";
 
 dotenv.config();
 
@@ -28,6 +29,8 @@ const port = 7001;
 
 //auth
 app.use("/api/auth", authRoute);
+//segments
+app.use("/api/segment", segmentRoute);
 
 app.get("/api", (req, res) => {
   res.json({ message: "Hello from the Express server!" });
