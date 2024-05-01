@@ -20,7 +20,7 @@ export const createSegment = async (req, res) => {
         {
           name: formData.name,
           description: formData.description,
-          source_type: formData.source_type,
+          source_type: "FIRST_PARTY",
           retention_in_days: formData.retention_in_days,
           ad_account_id: formData.ad_account_id,
         },
