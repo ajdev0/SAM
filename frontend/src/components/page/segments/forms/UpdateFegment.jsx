@@ -4,15 +4,15 @@ import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { useAuthId, useAuthToken } from "../../../utils/hooks/useLocalStorage";
 
-const CreateFegment = ({ closeModal }) => {
+const UpdateFegment = ({ closeModal, segmentId }) => {
   const [formData, setFormData] = useState({
+    id: segmentId,
     name: "",
     description: "",
     retention_in_days: "",
-    ad_account_id: "",
   });
   const [errors, setErrors] = useState({});
-  const [setId] = useAuthId();
+  const [id, setId] = useAuthId();
   const [token] = useAuthToken();
 
   const handleChange = (e) => {
@@ -36,7 +36,7 @@ const CreateFegment = ({ closeModal }) => {
     }
 
     try {
-      const res = await axios.post("/api/segment/create", formData, {
+      const res = await axios.put(`/api/segment/update/${id}`, formData, {
         headers: {
           "snap-access-token": token,
         },
@@ -102,26 +102,12 @@ const CreateFegment = ({ closeModal }) => {
           </span>
         )}
 
-        <input
-          type="text"
-          name="ad_account_id"
-          placeholder="Ad Account ID"
-          className="border border-slate-100 rounded-md p-3 outline-none shadow-sm"
-          value={formData.ad_account_id}
-          onChange={handleChange}
-        />
-        {errors.ad_account_id && (
-          <span className="text-xs text-red-500 capitalize px-2">
-            {errors.ad_account_id}
-          </span>
-        )}
-
         <button type="submit" className="bg-[#ece900] p-4 rounded-md shadow">
-          Create Segment
+          Update Segment
         </button>
       </form>
     </div>
   );
 };
 
-export default CreateFegment;
+export default UpdateFegment;

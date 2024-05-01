@@ -50,7 +50,7 @@ export const createSegment = async (req, res) => {
 
 // Get all segments
 export const getAllSegments = async (req, res) => {
-  const accountAdId = req.body.ad_account_id;
+  const accountAdId = req.params.ad_account_id;
   const accessToken = req.headers["snap-access-token"];
   const config = {
     headers: {

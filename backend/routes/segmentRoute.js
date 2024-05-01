@@ -19,7 +19,7 @@ const segmentRoute = express.Router();
 5. Update segment
 */
 
-segmentRoute.get("/", getAllSegments);
+segmentRoute.get("/:ad_account_id", getAllSegments);
 segmentRoute.get("/:segment_id", getSegmentById);
 segmentRoute.post("/create", createSegment);
 segmentRoute.put("/update/:ad_account_id", updateSegment);
