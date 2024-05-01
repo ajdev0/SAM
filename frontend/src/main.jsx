@@ -5,6 +5,7 @@ import "./index.css";
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import Layout from "./components/layout/Layout.jsx";
 import Segments from "./components/page/segments/Segments.jsx";
+import Users from "./components/page/users/Users.jsx";
 const router = createBrowserRouter([
   {
     path: "/",
@@ -13,7 +14,10 @@ const router = createBrowserRouter([
   {
     path: "dash",
     element: <Layout />,
-    children: [{ path: "segments", element: <Segments /> }],
+    children: [
+      { path: "segments", element: <Segments /> },
+      { path: "users", element: <Users /> },
+    ],
   },
 ]);
 ReactDOM.createRoot(document.getElementById("root")).render(
