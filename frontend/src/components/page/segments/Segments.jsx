@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import Modal from "./Modal";
 import ModalU from "./Modal";
+import ModalUser from "./Modal";
 import CreateFegment from "./forms/CreateFegment";
 import axios from "axios";
 import { Link, useNavigate } from "react-router-dom";
@@ -11,10 +12,12 @@ import {
 } from "../../utils/hooks/useLocalStorage";
 import useSegments from "../../utils/hooks/useSegments";
 import UpdateFegment from "./forms/UpdateFegment";
+import AddUsersFegment from "./forms/AddUsersFegment";
 
 const Segments = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [isOpenU, setIsOpenU] = useState(false);
+  const [isOpenUser, setIsOpenUser] = useState(false);
   const segments = useSegments();
   const [token, setToken] = useAuthToken();
   const [code, setCode] = useAuthCode();
@@ -66,21 +69,41 @@ const Segments = () => {
 
     // Updating the URL
     window.history.pushState({ path: currentUrl }, "", currentUrl);
-    setIsOpenU(true);
+  };
+  const segmentUpdate = (id) => {
+    // Getting the current URL
+    let currentUrl = window.location.href;
+
+    // Appending the id as a parameter
+    currentUrl += `?ad_id=${id}`;
+
+    // Updating the URL
+    window.history.pushState({ path: currentUrl }, "", currentUrl);
   };
 
   const UpdateSegmentV = () => {
     return (
       <ModalU isOpen={isOpenU} onClose={() => setIsOpenU(false)}>
+        <div className="my-3">Update Segment</div>
         <UpdateFegment segmentId={segmentId} />
+      </ModalU>
+    );
+  };
+  const AddUsersSegment = () => {
+    return (
+      <ModalU isOpen={isOpenUser} onClose={() => setIsOpenUser(false)}>
+        <div className="my-3">Add Users To Segment</div>
+        <AddUsersFegment segmentId={segmentId} />
       </ModalU>
     );
   };
   return (
     <div className="container mx-auto">
       <UpdateSegmentV />
+      <AddUsersSegment />
       <div className="flex justify-between py-6">
         <h1 className="text-2xl font-bold">Segments List</h1>
+
         <button
           onClick={openModal}
           className="bg-slate-300 shadow-lg rounded-full p-4"
@@ -88,6 +111,8 @@ const Segments = () => {
           Create Segment
         </button>
         <Modal isOpen={isOpen} onClose={closeModal}>
+          <div className="my-3">Create Segment</div>
+
           <CreateFegment closeModal={closeModal} />
         </Modal>
       </div>
@@ -101,8 +126,11 @@ const Segments = () => {
                 <th className="p-3 text-left">Retention Days</th>
                 <th className="p-3 text-left">Approx Users</th>
                 <th className="p-3 text-left">Status</th>
-                <th className="p-3 text-left" width="110px">
-                  Actions
+                <th className="p-3 text-left" width="200px">
+                  Add Users
+                </th>
+                <th className="p-3 text-left" width="200px">
+                  Update
                 </th>
               </tr>
               <tr className="bg-[#ece900]  flex flex-col flex-no wrap sm:table-row rounded-l-lg sm:rounded-none mb-2 sm:mb-0">
@@ -111,8 +139,11 @@ const Segments = () => {
                 <th className="p-3 text-left">Retention Days</th>
                 <th className="p-3 text-left">Approx Users</th>
                 <th className="p-3 text-left">Status</th>
-                <th className="p-3 text-left" width="110px">
-                  Actions
+                <th className="p-3 text-left" width="200px">
+                  Add Users
+                </th>
+                <th className="p-3 text-left" width="200px">
+                  Update
                 </th>
               </tr>
               <tr className="bg-[#ece900]  flex flex-col flex-no wrap sm:table-row rounded-l-lg sm:rounded-none mb-2 sm:mb-0">
@@ -121,8 +152,11 @@ const Segments = () => {
                 <th className="p-3 text-left">Retention Days</th>
                 <th className="p-3 text-left">Approx Users</th>
                 <th className="p-3 text-left">Status</th>
-                <th className="p-3 text-left" width="110px">
-                  Actions
+                <th className="p-3 text-left" width="200px">
+                  Add Users
+                </th>
+                <th className="p-3 text-left" width="200px">
+                  Update
                 </th>
               </tr>
               <tr className="bg-[#ece900]  flex flex-col flex-no wrap sm:table-row rounded-l-lg sm:rounded-none mb-2 sm:mb-0">
@@ -131,8 +165,11 @@ const Segments = () => {
                 <th className="p-3 text-left">Retention Days</th>
                 <th className="p-3 text-left">Approx Users</th>
                 <th className="p-3 text-left">Status</th>
-                <th className="p-3 text-left" width="110px">
+                <th className="p-3 text-left" width="200px">
                   Actions
+                </th>
+                <th className="p-3 text-left" width="200px">
+                  Update
                 </th>
               </tr>
             </thead>
@@ -154,8 +191,28 @@ const Segments = () => {
                   <td className="border-grey-light border hover:bg-gray-100 p-3 truncate">
                     {segment?.status}
                   </td>
-                  <td className="border-grey-light border hover:bg-gray-100 p-3 text-red-400 hover:text-red-600 hover:font-medium cursor-pointer">
-                    <button onClick={() => update(segment?.id)}>Update</button>
+
+                  <td className="border-grey-light border hover:bg-gray-100 p-3 text-black hover:text-yellow-500 hover:font-medium cursor-pointer">
+                    <button
+                      onClick={() => {
+                        update(segment?.id);
+                        setIsOpenUser(true);
+                      }}
+                      className="bg-slate-300 shadow-lg rounded p-2"
+                    >
+                      Add Users
+                    </button>
+                  </td>
+                  <td className="border-grey-light border hover:bg-gray-100 p-3 text-black hover:text-yellow-500 hover:font-medium cursor-pointer">
+                    <button
+                      className="bg-slate-300 shadow-lg rounded p-2"
+                      onClick={() => {
+                        setIsOpenU(true);
+                        segmentUpdate(id);
+                      }}
+                    >
+                      Update
+                    </button>
                   </td>
                 </tr>
               </tbody>

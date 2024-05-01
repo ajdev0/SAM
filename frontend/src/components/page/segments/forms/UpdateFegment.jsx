@@ -29,7 +29,7 @@ const UpdateFegment = ({ closeModal, segmentId }) => {
     }
   });
 
-  const createSegmet = async () => {
+  const updateSegmet = async () => {
     if (Object.keys(validationErrors).length > 0) {
       setErrors(validationErrors);
       return;
@@ -53,7 +53,7 @@ const UpdateFegment = ({ closeModal, segmentId }) => {
   //SUBMIT
   const handleSubmit = (e) => {
     e.preventDefault();
-    createSegmet();
+    updateSegmet();
   };
   return (
     <div className="overflow-scroll ">

@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useAuthId, useAuthToken } from "./useLocalStorage";
 
 const useSegments = () => {
-  const [segments, setSegments] = useState([]);
+  const [segments, setSegments] = useState([""]);
   const [id] = useAuthId();
   const [token] = useAuthToken();
 
