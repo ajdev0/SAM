@@ -1,8 +1,6 @@
 import React, { useEffect, useState } from "react";
 import Modal from "./Modal";
-import ModalU from "./Modal";
-import ModalUser from "./Modal";
-import CreateFegment from "./forms/CreateFegment";
+import CreateSegment from "./forms/CreateSegment";
 import axios from "axios";
 import { Link, useNavigate } from "react-router-dom";
 import {
@@ -11,43 +9,44 @@ import {
   useAuthToken,
 } from "../../utils/hooks/useLocalStorage";
 import useSegments from "../../utils/hooks/useSegments";
-import UpdateFegment from "./forms/UpdateFegment";
-import AddUsersFegment from "./forms/AddUsersFegment";
+import UpdateSegment from "./forms/UpdateSegment";
+import AddUsersSegmentForm from "./forms/AddUsersSegment";
 
 const Segments = () => {
+  const segments = useSegments();
+  const navigate = useNavigate();
+
   const [isOpen, setIsOpen] = useState(false);
   const [isOpenU, setIsOpenU] = useState(false);
   const [isOpenUser, setIsOpenUser] = useState(false);
-  const segments = useSegments();
+  const [accountAd, setAccountAd] = useState("");
+
   const [token, setToken] = useAuthToken();
   const [code, setCode] = useAuthCode();
-  const [id] = useAuthId();
-
-  const navigate = useNavigate();
+  const [id, setId] = useAuthId();
 
   const queryString = window.location.search;
   const urlParams = new URLSearchParams(queryString);
-  const resCode = urlParams.get("code");
   const segmentId = urlParams.get("segment_id");
+  const resCode = urlParams.get("code");
 
   //get and store access token locally
   const getAccessToken = async () => {
-    //store code
     if (resCode !== null) {
       setCode(resCode);
     }
     try {
-      const res = await axios.post(`/api/auth/access/${code}`);
-      setToken(res.access_token);
+      const res = await axios.post(`/api/auth/access/${resCode}`);
+      console.log(res);
+      setToken(res.data.access_token);
+      navigate(0);
     } catch (error) {
-      if (token === null) {
-        navigate("/");
-      }
-      console.log(error);
+      console.log(error.response.data.message);
     }
   };
+
   useEffect(() => {
-    if (code !== null) {
+    if (resCode !== null) {
       getAccessToken();
     }
   }, []);
@@ -60,46 +59,28 @@ const Segments = () => {
     setIsOpen(false);
   };
 
-  const update = (id) => {
-    // Getting the current URL
-    let currentUrl = window.location.href;
-
-    // Appending the id as a parameter
-    currentUrl += `?segment_id=${id}`;
-
-    // Updating the URL
-    window.history.pushState({ path: currentUrl }, "", currentUrl);
-  };
-  const segmentUpdate = (id) => {
-    // Getting the current URL
-    let currentUrl = window.location.href;
-
-    // Appending the id as a parameter
-    currentUrl += `?ad_id=${id}`;
-
-    // Updating the URL
-    window.history.pushState({ path: currentUrl }, "", currentUrl);
-  };
-
-  const UpdateSegmentV = () => {
+  const UpdateSegmentView = () => {
     return (
-      <ModalU isOpen={isOpenU} onClose={() => setIsOpenU(false)}>
+      <Modal isOpen={isOpenU} onClose={() => setIsOpenU(false)}>
         <div className="my-3">Update Segment</div>
-        <UpdateFegment segmentId={segmentId} />
-      </ModalU>
+        <UpdateSegment closeModal={() => setIsOpenU(false)} />
+      </Modal>
     );
   };
   const AddUsersSegment = () => {
     return (
-      <ModalU isOpen={isOpenUser} onClose={() => setIsOpenUser(false)}>
+      <Modal isOpen={isOpenUser} onClose={() => setIsOpenUser(false)}>
         <div className="my-3">Add Users To Segment</div>
-        <AddUsersFegment segmentId={segmentId} />
-      </ModalU>
+        <AddUsersSegmentForm
+          segmentId={segmentId}
+          closeModal={() => setIsOpenUser(false)}
+        />
+      </Modal>
     );
   };
   return (
     <div className="container mx-auto">
-      <UpdateSegmentV />
+      <UpdateSegmentView />
       <AddUsersSegment />
       <div className="flex justify-between py-6">
         <h1 className="text-2xl font-bold">Segments List</h1>
@@ -113,10 +94,10 @@ const Segments = () => {
         <Modal isOpen={isOpen} onClose={closeModal}>
           <div className="my-3">Create Segment</div>
 
-          <CreateFegment closeModal={closeModal} />
+          <CreateSegment closeModal={closeModal} />
         </Modal>
       </div>
-      {segments.length !== 0 && (
+      {segments.length !== 0 ? (
         <div>
           <table className="w-full flex flex-row flex-no-wrap sm:bg-white rounded-lg overflow-hidden sm:shadow-lg my-5">
             <thead className="text-black">
@@ -174,50 +155,79 @@ const Segments = () => {
               </tr>
             </thead>
             {segments.map((segment) => (
-              <tbody className="flex-1 sm:flex-none">
+              <tbody
+                className="flex-1 sm:flex-none text-black"
+                key={segment.segment?.id}
+              >
                 <tr className="flex flex-col flex-no wrap sm:table-row mb-2 sm:mb-0">
                   <td className="border-grey-light border hover:bg-gray-100 p-3">
-                    {segment?.id}
+                    {segment.segment?.id}
                   </td>
                   <td className="border-grey-light border hover:bg-gray-100 p-3 truncate">
-                    {segment?.name}
+                    {segment?.segment?.name}
                   </td>
                   <td className="border-grey-light border hover:bg-gray-100 p-3 truncate">
-                    {segment?.retention_in_days}
+                    {segment?.segment?.retention_in_days}
                   </td>
                   <td className="border-grey-light border hover:bg-gray-100 p-3 truncate">
-                    {segment?.approximate_number_users}
+                    {segment?.segment?.approximate_number_users}
                   </td>
                   <td className="border-grey-light border hover:bg-gray-100 p-3 truncate">
-                    {segment?.status}
+                    {segment?.segment?.status}
                   </td>
 
                   <td className="border-grey-light border hover:bg-gray-100 p-3 text-black hover:text-yellow-500 hover:font-medium cursor-pointer">
-                    <button
+                    <Link
+                      state={segment.segment}
                       onClick={() => {
-                        update(segment?.id);
                         setIsOpenUser(true);
                       }}
                       className="bg-slate-300 shadow-lg rounded p-2"
                     >
                       Add Users
-                    </button>
+                    </Link>
                   </td>
                   <td className="border-grey-light border hover:bg-gray-100 p-3 text-black hover:text-yellow-500 hover:font-medium cursor-pointer">
-                    <button
+                    <Link
+                      state={segment.segment}
                       className="bg-slate-300 shadow-lg rounded p-2"
                       onClick={() => {
                         setIsOpenU(true);
-                        segmentUpdate(id);
                       }}
                     >
                       Update
-                    </button>
+                    </Link>
                   </td>
                 </tr>
               </tbody>
             ))}
           </table>
+        </div>
+      ) : id === null ? (
+        <form className="flex gap-3 items-center justify-center">
+          <input
+            type="text"
+            placeholder="Enter your account ad id"
+            className="border border-slate-100 rounded-md p-3 outline-none shadow-sm"
+            onChange={(e) => setAccountAd(e.target.value)}
+          />
+          <button
+            onClick={() => {
+              setId(accountAd);
+            }}
+            className="px-4 py-3 text-center shadow-md  bg-[#ece900] hover:bg-yellow-200 rounded w-fit"
+          >
+            Add
+          </button>
+        </form>
+      ) : (
+        <div className="flex items-center justify-center">
+          <Link
+            to="/"
+            className="p-4 text-center shadow-md  bg-[#ece900] hover:bg-yellow-200 rounded w-fit"
+          >
+            Authenticate First
+          </Link>
         </div>
       )}
     </div>

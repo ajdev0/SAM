@@ -34,3 +34,4 @@ frontend/*.sw?
 Task.md
 SOL.md
 emails.txt
+users.db

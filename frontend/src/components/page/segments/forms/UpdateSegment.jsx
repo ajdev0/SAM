@@ -3,16 +3,19 @@ import axios from "axios";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { useAuthId, useAuthToken } from "../../../utils/hooks/useLocalStorage";
+import { useLocation } from "react-router-dom";
 
-const CreateFegment = ({ closeModal }) => {
+const UpdateSegment = ({ closeModal }) => {
+  const location = useLocation();
+  const state = location.state;
+
   const [formData, setFormData] = useState({
-    name: "",
-    description: "",
-    retention_in_days: "",
-    ad_account_id: "",
+    id: state.id,
+    name: state.name,
+    description: state.description,
+    retention_in_days: state.retention_in_days,
   });
   const [errors, setErrors] = useState({});
-  const [setId] = useAuthId();
   const [token] = useAuthToken();
 
   const handleChange = (e) => {
@@ -29,37 +32,56 @@ const CreateFegment = ({ closeModal }) => {
     }
   });
 
-  const createSegmet = async () => {
+  const updateSegmet = async () => {
     if (Object.keys(validationErrors).length > 0) {
       setErrors(validationErrors);
       return;
     }
 
     try {
-      const res = await axios.post("/api/segment/create", formData, {
-        headers: {
-          "snap-access-token": token,
-        },
-      });
-      console.log(res.request_status);
-      toast(res.data.request_status);
-      setId(formData.ad_account_id);
+      const res = await axios.put(
+        `/api/segment/update/${state.ad_account_id}`,
+        formData,
+        {
+          headers: {
+            "snap-access-token": token,
+          },
+        }
+      );
+      console.log(res);
+      // toast(res.data.request_status);
       closeModal();
     } catch (error) {
-      console.log(error.response.data.message);
-      toast.error(error.response.data.message.toUpperCase());
+      console.log(error);
+      //console.log(error.response.data.message);
+      // toast.error(error.response.data.message.request_status);
     }
   };
   //SUBMIT
   const handleSubmit = (e) => {
     e.preventDefault();
-    createSegmet();
+    updateSegmet();
   };
   return (
     <div className="overflow-scroll ">
       <ToastContainer />
 
       <form onSubmit={handleSubmit} className=" flex flex-col gap-6">
+        <input
+          type="text"
+          name="id"
+          placeholder="ID"
+          className="border border-slate-100 rounded-md p-3 outline-none shadow-sm"
+          value={formData.id}
+          readOnly
+          disabled
+          onChange={handleChange}
+        />
+        {errors.id && (
+          <span className="text-xs text-red-500 capitalize px-2">
+            {errors.id}
+          </span>
+        )}
         <input
           type="text"
           name="name"
@@ -102,26 +124,12 @@ const CreateFegment = ({ closeModal }) => {
           </span>
         )}
 
-        <input
-          type="text"
-          name="ad_account_id"
-          placeholder="Ad Account ID"
-          className="border border-slate-100 rounded-md p-3 outline-none shadow-sm"
-          value={formData.ad_account_id}
-          onChange={handleChange}
-        />
-        {errors.ad_account_id && (
-          <span className="text-xs text-red-500 capitalize px-2">
-            {errors.ad_account_id}
-          </span>
-        )}
-
         <button type="submit" className="bg-[#ece900] p-4 rounded-md shadow">
-          Create Segment
+          Update Segment
         </button>
       </form>
     </div>
   );
 };
 
-export default CreateFegment;
+export default UpdateSegment;

@@ -1,24 +1,26 @@
 import React, { useEffect, useState } from "react";
 import { useAuthId, useAuthToken } from "./useLocalStorage";
+import axios from "axios";
 
 const useSegments = () => {
-  const [segments, setSegments] = useState([""]);
+  const [segments, setSegments] = useState([]);
   const [id] = useAuthId();
   const [token] = useAuthToken();
 
-  //get all segments
-  const getAllSegments = () => {
+  const getAllSegments = async () => {
     try {
-      const res = axios.get(`/api/segment/${id}`, {
+      const res = await axios.get(`/api/segment/${id}`, {
         headers: {
           "snap-access-token": token,
         },
       });
+      console.log(res);
       setSegments(res.data?.segments);
     } catch (error) {
-      console.log(error);
+      console.log(error.response);
     }
   };
+
   useEffect(() => {
     if (id !== null && token !== null) {
       getAllSegments();

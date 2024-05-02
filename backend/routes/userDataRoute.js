@@ -5,7 +5,7 @@ import {
   getUsers,
   updateUser,
   usersUpload,
-} from "../controller/userDataContriller.js";
+} from "../controller/userDataController.js";
 
 const userDataRoute = express.Router();
 /****

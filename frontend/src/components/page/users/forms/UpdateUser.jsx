@@ -1,20 +1,28 @@
 import axios from "axios";
 import React, { useState } from "react";
+import { useLocation, useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 
-const UpdateUser = ({ closeModal, userId }) => {
+const UpdateUser = ({ closeModal }) => {
+  const location = useLocation();
+  const state = location.state;
+
+  const navigate = useNavigate();
+
   const [userData, setUserData] = useState("");
   const [error, setError] = useState("");
-  const updateUser = async () => {
+
+  const updateUserDate = async () => {
     if (userData === "") {
       setError("This field is required");
       return;
     }
 
     try {
-      const res = await axios.put(`/api/users/${userId}`, {
+      const res = await axios.put(`/api/users/${state?.id}`, {
         user_data: userData,
       });
+      navigate(0);
       toast.success(res.data.message);
       closeModal();
     } catch (error) {
@@ -25,7 +33,7 @@ const UpdateUser = ({ closeModal, userId }) => {
   //SUBMIT
   const handleSubmit = (e) => {
     e.preventDefault();
-    updateUser();
+    updateUserDate();
   };
   return (
     <div>
@@ -34,7 +42,8 @@ const UpdateUser = ({ closeModal, userId }) => {
           name="user_data"
           id=""
           cols="30"
-          rows="10"
+          rows="6"
+          defaultValue={state?.user_data}
           onChange={(e) => setUserData(e.target.value)}
           className="border border-slate-100 rounded-md p-3 outline-none shadow-sm"
           placeholder="User Data"

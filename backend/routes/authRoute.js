@@ -2,7 +2,7 @@ import express from "express";
 import {
   getAuthAccessToken,
   redirectAuthUser,
-} from "../controller/authContriller.js";
+} from "../controller/authController.js";
 
 const authRoute = express.Router();
 

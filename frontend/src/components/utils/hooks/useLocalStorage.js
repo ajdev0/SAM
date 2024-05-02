@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 
 const useLocalStorage = (key, initialValue) => {
   const [value, setValue] = useState(() => {
@@ -15,6 +16,7 @@ const useLocalStorage = (key, initialValue) => {
 
 const useAuthToken = () => {
   const [token, setToken] = useLocalStorage("_TOKEN", null);
+
   return [token, setToken];
 };
 

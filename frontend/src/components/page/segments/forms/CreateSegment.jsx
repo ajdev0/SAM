@@ -2,17 +2,18 @@ import React, { useState } from "react";
 import axios from "axios";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import { useAuthId, useAuthToken } from "../../../utils/hooks/useLocalStorage";
+import { useAuthToken } from "../../../utils/hooks/useLocalStorage";
+import { useNavigate } from "react-router-dom";
 
-const UpdateFegment = ({ closeModal, segmentId }) => {
+const CreateSegment = ({ closeModal }) => {
+  const navigate = useNavigate();
   const [formData, setFormData] = useState({
-    id: segmentId,
     name: "",
     description: "",
     retention_in_days: "",
+    ad_account_id: "",
   });
   const [errors, setErrors] = useState({});
-  const [id, setId] = useAuthId();
   const [token] = useAuthToken();
 
   const handleChange = (e) => {
@@ -29,31 +30,33 @@ const UpdateFegment = ({ closeModal, segmentId }) => {
     }
   });
 
-  const updateSegmet = async () => {
+  const createSegmet = async () => {
     if (Object.keys(validationErrors).length > 0) {
       setErrors(validationErrors);
       return;
     }
 
     try {
-      const res = await axios.put(`/api/segment/update/${id}`, formData, {
+      const res = await axios.post("/api/segment/create", formData, {
         headers: {
           "snap-access-token": token,
         },
       });
-      console.log(res.request_status);
-      toast(res.data.request_status);
-      setId(formData.ad_account_id);
+      console.log(res);
+      navigate(0);
+      //  console.log(formData.ad_account_id);
+
+      toast.success(res.data.request_status);
       closeModal();
     } catch (error) {
-      console.log(error.response.data.message);
-      toast.error(error.response.data.message.toUpperCase());
+      console.log(error);
+      toast.error(error.response.data.message.request_status);
     }
   };
   //SUBMIT
   const handleSubmit = (e) => {
     e.preventDefault();
-    updateSegmet();
+    createSegmet();
   };
   return (
     <div className="overflow-scroll ">
@@ -102,12 +105,26 @@ const UpdateFegment = ({ closeModal, segmentId }) => {
           </span>
         )}
 
+        <input
+          type="text"
+          name="ad_account_id"
+          placeholder="Ad Account ID"
+          className="border border-slate-100 rounded-md p-3 outline-none shadow-sm"
+          value={formData.ad_account_id}
+          onChange={handleChange}
+        />
+        {errors.ad_account_id && (
+          <span className="text-xs text-red-500 capitalize px-2">
+            {errors.ad_account_id}
+          </span>
+        )}
+
         <button type="submit" className="bg-[#ece900] p-4 rounded-md shadow">
-          Update Segment
+          Create Segment
         </button>
       </form>
     </div>
   );
 };
 
-export default UpdateFegment;
+export default CreateSegment;

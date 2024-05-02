@@ -2,37 +2,23 @@ import React, { useState } from "react";
 import useUsersData from "../../utils/hooks/useUsersData";
 import Modal from "../segments/Modal";
 import UpdateUser from "./forms/UpdateUser";
+import { Link } from "react-router-dom";
 
 const Users = () => {
   const users = useUsersData();
   const [isOpenU, setIsOpenU] = useState(false);
 
-  const queryString = window.location.search;
-  const urlParams = new URLSearchParams(queryString);
-  const userId = urlParams.get("user_id");
-
-  const update = (id) => {
-    // Getting the current URL
-    let currentUrl = window.location.href;
-
-    // Appending the id as a parameter
-    currentUrl += `?user_id=${id}`;
-
-    // Updating the URL
-    window.history.pushState({ path: currentUrl }, "", currentUrl);
-  };
-
-  const UpdateUserV = () => {
+  const UpdateUserView = () => {
     return (
       <Modal isOpen={isOpenU} onClose={() => setIsOpenU(false)}>
         <div className="my-3">Update User</div>
-        <UpdateUser closeModal={() => setIsOpenU(false)} userId={userId} />
+        <UpdateUser closeModal={() => setIsOpenU(false)} />
       </Modal>
     );
   };
   return (
     <div className="container mx-auto">
-      <UpdateUserV />
+      <UpdateUserView />
       {users.length !== 0 && (
         <div>
           <table className="w-full flex flex-row flex-no-wrap sm:bg-white rounded-lg overflow-hidden sm:shadow-lg my-5">
@@ -74,29 +60,29 @@ const Users = () => {
                 </th>
               </tr>
             </thead>
-            {users.map((segment) => (
-              <tbody className="flex-1 sm:flex-none">
+            {users.map((user) => (
+              <tbody className="flex-1 sm:flex-none" key={user?.id}>
                 <tr className="flex flex-col flex-no wrap sm:table-row mb-2 sm:mb-0">
                   <td className="border-grey-light border hover:bg-gray-100 p-3">
-                    {segment?.id}
+                    {user?.id}
                   </td>
                   <td className="border-grey-light border hover:bg-gray-100 p-3 truncate">
-                    {segment?.unhashed_email}
+                    {user?.unhashed_email}
                   </td>
                   <td className="border-grey-light border hover:bg-gray-100 p-3 truncate">
-                    {segment?.user_data}
+                    {user?.user_data}
                   </td>
 
                   <td className="border-grey-light border hover:bg-gray-100 p-3 text-black hover:text-yellow-500 hover:font-medium cursor-pointer">
-                    <button
+                    <Link
+                      state={user}
                       className="bg-slate-300 shadow-lg rounded p-2"
                       onClick={() => {
                         setIsOpenU(true);
-                        update(segment.id);
                       }}
                     >
                       Update
-                    </button>
+                    </Link>
                   </td>
                 </tr>
               </tbody>
