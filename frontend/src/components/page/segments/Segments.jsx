@@ -214,6 +214,7 @@ const Segments = () => {
           <button
             onClick={() => {
               setId(accountAd);
+              navigate(0);
             }}
             className="px-4 py-3 text-center shadow-md  bg-[#ece900] hover:bg-yellow-200 rounded w-fit"
           >
