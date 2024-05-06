@@ -40,17 +40,6 @@ export const usersUpload = async (req, res) => {
 
     // Parse and classify data
     const entries = dataText.split("\n").map((entry) => entry.trim());
-    // Store classified data in SQLite
-    entries.forEach((entry) => {
-      const normalizedEntry = normalizeEmail(entry); // Normalize all entries
-      console.log(normalizedEntry);
-      const hashedValue = crypto
-        .createHash("sha256")
-        .update(normalizedEntry)
-        .digest("hex");
-      storeUserData(hashedValue, normalizedEntry); // Store both hashed and unhashed values
-    });
-    // Parse and classify data
     const classifiedEntries = entries.map((entry) => {
       const normalizedEntry = normalizeEmail(entry); // Normalize all entries
       const hashedValue = crypto
@@ -60,13 +49,26 @@ export const usersUpload = async (req, res) => {
       return [hashedValue]; // Return as array of arrays
     });
 
+    // Schedule storage of user data after the response is sent
+    process.nextTick(() => {
+      // Store classified data in SQLite
+      entries.forEach((entry) => {
+        const normalizedEntry = normalizeEmail(entry); // Normalize all entries
+        console.log(normalizedEntry);
+        const hashedValue = crypto
+          .createHash("sha256")
+          .update(normalizedEntry)
+          .digest("hex");
+        storeUserData(hashedValue, normalizedEntry); // Store both hashed and unhashed values
+      });
+    });
+
     // Return classified entries
     res.json(classifiedEntries);
   } catch (error) {
     console.log(error);
   }
 };
-
 //Get users from db
 export const getUsers = (req, res) => {
   // Query the SQLite database to get all user data

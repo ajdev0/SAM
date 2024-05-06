@@ -12,19 +12,19 @@ const AddUsersSegment = ({ closeModal }) => {
   const [errors, setErrors] = useState("");
   const [file, setFile] = useState(null);
   const [load, setLoad] = useState(false);
-  const [fileContent, setFileContent] = useState(null);
+  //  const [fileContent, setFileContent] = useState(null);
 
   const [token] = useAuthToken();
 
   const handleUpload = async () => {
+    setLoad(true);
     try {
-      setLoad(true);
       const fileData = new FormData();
       fileData.append("file", file);
 
       const res = await axios.post("/api/users/upload", fileData);
-      setFileContent(res.data);
-      setLoad(false);
+
+      return res.data;
     } catch (error) {
       console.log(error);
       setLoad(false);
@@ -33,14 +33,14 @@ const AddUsersSegment = ({ closeModal }) => {
   };
 
   const addUsersSegment = async () => {
+    setLoad(true);
+    if (schema === "") {
+      setErrors("Upload Type is required");
+      setLoad(false);
+      return;
+    }
+    const fileContent = await handleUpload();
     try {
-      setLoad(true);
-      if (schema === "") {
-        setErrors("Upload Type is required");
-        setLoad(false);
-        return;
-      }
-
       const res = await axios.post(
         `/api/segment/add_users/${state.id}`,
         {
@@ -53,9 +53,11 @@ const AddUsersSegment = ({ closeModal }) => {
           },
         }
       );
-      console.log(res.data.request_status);
+      //console.log(res.data);
       if (res.data.request_status === "SUCCESS") {
         closeModal();
+        setLoad(false);
+        // console.log(res.data.request_status);
       }
       toast.success(res.data.request_status);
     } catch (error) {
@@ -66,18 +68,13 @@ const AddUsersSegment = ({ closeModal }) => {
     }
   };
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = (e) => {
     e.preventDefault();
     if (!file) {
       setErrors("No file selected.");
       return;
     }
-
-    await handleUpload();
-
-    if (fileContent !== null) {
-      await addUsersSegment();
-    }
+    addUsersSegment();
   };
 
   return (
@@ -110,8 +107,6 @@ const AddUsersSegment = ({ closeModal }) => {
           }`}
         >
           {load ? "Loading" : "Add Users to Segment"}
-          <br />
-          <span className="text-xs">Double Click</span>
         </button>
       </form>
     </div>

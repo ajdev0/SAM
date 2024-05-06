@@ -14,7 +14,7 @@ const useSegments = () => {
           "snap-access-token": token,
         },
       });
-      console.log(res);
+      //      console.log(res);
       setSegments(res.data?.segments);
     } catch (error) {
       console.log(error.response);
